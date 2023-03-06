@@ -40,6 +40,7 @@
 #include "fonts/Arial_black_16.h"
 #include "fonts/Arial14.h"
 
+#include <iostream>
 #include <vector> // for vector
 #include <limits> // for numeric_limits
 #include <thread>
@@ -233,7 +234,7 @@ void anim_StationWaiting(PatternAnimator& p10, double cycle = std::numeric_limit
 // Station Stopped( chargehandle )
 // *********************************
 
-void anim_StationStopped(PatternAnimator& p10, double cycle = std::numeric_limits<double>::infinity())
+void anim_StationError(PatternAnimator& p10, double cycle = std::numeric_limits<double>::infinity())
 {
   int ROW_START = 4;
   int COL_START = 0;
@@ -443,7 +444,7 @@ void loop(void)
   // test
   // serial2_get_data(p10, dmd, "2");
 
-  // anim_StationStopped(p10, 1);
+  // anim_StationError(p10, 1);
   // anim_StationReserved(p10, 1);
   // anim_StationCharging(p10, 1);
   // anim_StationWaiting(p10, 1);
@@ -451,19 +452,15 @@ void loop(void)
   if (data_from_serial2 == "1")
   {
     charge_started = false;
-    if (!charge_stopped)
-    {
-      anim_StationCharge_Stopped();
-      charge_stopped = true;
-    }
-    anim_StationWaiting(p10, 1);
+    charge_stopped = false;
+    anim_StationCharge_Starting();
+
   }
   else if (data_from_serial2 == "2")
   {
     charge_stopped = false;
     if (!charge_started)
     {
-      anim_StationCharge_Starting();
       anim_StationCharge_Started();
       charge_started = true;
     }
@@ -473,21 +470,38 @@ void loop(void)
   {
     charge_started = false;
     charge_stopped = false;
-    anim_StationStopped(p10, 1);
+    anim_StationError(p10, 1);
   }
   else if (data_from_serial2 == "4")
   {
     charge_started = false;
-    charge_stopped = false;
-    anim_StationReserved(p10, 1);
+    if (!charge_stopped)
+    {
+      anim_StationCharge_Stopped();
+      charge_stopped = true;
+    }
+    anim_StationWaiting(p10, 1);
   }
   else if (data_from_serial2 == "5")
   {
     charge_started = false;
     charge_stopped = false;
-    anim_StationWaiting(p10, 1);
+    anim_InsertSocket(p10, 1);
+    anim_StationError(p10, 1);
   }
   else if (data_from_serial2 == "6")
+  {
+    charge_started = false;
+    charge_stopped = false;
+    anim_StationWaiting(p10, 1);
+  }
+  else if (data_from_serial2 == "7")
+  {
+    charge_started = false;
+    charge_stopped = false;
+    anim_StationReserved(p10, 1);
+  }
+  else if (data_from_serial2 == "8")
   {
     charge_started = false;
     charge_stopped = false;
