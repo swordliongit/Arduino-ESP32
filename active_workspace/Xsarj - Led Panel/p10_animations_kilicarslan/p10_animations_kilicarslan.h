@@ -53,8 +53,12 @@ public:
     // 7x15
     static std::vector<std::vector<int>> chargehandle_cable_frame_1;
     static std::vector<std::vector<int>> chargehandle_cable_frame_2;
+    // 6x54
+    static std::vector<std::vector<int>> insert_socket;
 
     static std::vector<std::vector<std::vector<int>>> pattern_pack;
+
+    
 
     
     // member functions
@@ -68,7 +72,6 @@ public:
     void draw_pattern_tetris(std::vector<std::vector<int>> pattern, int ROW_START, int COL_START, int PANEL_LAST_COL, int msdelay, double cycle=std::numeric_limits<double>::infinity());
     void draw_pattern_scrolling_series(std::vector<std::vector<std::vector<int>>> pattern_pack, int ROW_START, int COL_START, int PATTERN_DISTANCE, float delaystep, double cycle=std::numeric_limits<double>::infinity());
     void draw_pattern_scrolling_accumulator_series(std::vector<std::vector<std::vector<int>>> pattern_pack, int ROW_START, int COL_START, int PATTERN_DISTANCE, float delaystep, double cycle=std::numeric_limits<double>::infinity());
-
     // helper functions
     void rotate_matrix_90(std::vector<std::vector<int>>& matrix);
 };

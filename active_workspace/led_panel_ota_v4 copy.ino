@@ -237,13 +237,52 @@ bool animFinished = false;
 
 void parallel_drawer_InsertSocket(PatternAnimator& p10, double cycle)
 {
-    int ROW_START = 5;
-    int COL_START = 2;
-
-    p10.draw_pattern_static(p10.insert_socket, ROW_START, COL_START);
-    
+    int ROW_START = 4;
+    int COL_START = 0;
+    int msdelay = 0;
+    int delaystep = 35;
+    int COL_FINISH = 25;
+    for (int cycle = 0; cycle < 1; ++cycle)
+    {
+      dmd.drawMarquee("Soketi Takin", 12, (32 * DISPLAYS_ACROSS) - 1, 4);
+      long start = millis();
+      long timer = start;
+      boolean ret = false;
+      while (!ret)
+      {
+        if ((timer + 21) < millis())
+        {
+          ret = dmd.stepMarquee(-1, 0);
+          timer = millis();
+        }
+      }
+    }
 }
+void parallel_drawer_Barrier(PatternAnimator& p10)
+{
+  int ROW_START = 4;
+  int COL_START = 35;
+  
+  // 8x28
+  std::vector<std::vector<int>> barrier =
+  {
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+  };
 
+  while (!animFinished)
+  {
+    p10.draw_pattern_static(barrier, ROW_START, COL_START);
+  }
+  animFinished = false;
+  
+}
 
 void anim_StationError(PatternAnimator& p10, double cycle = std::numeric_limits<double>::infinity())
 {
@@ -284,7 +323,6 @@ void anim_StationCharge_Starting()
 }
 void anim_StationCharge_Started()
 {
-  
   for (int cycle = 0; cycle < 1; ++cycle)
   {
     dmd.drawMarquee("Sarj Basladi", 12, (32 * DISPLAYS_ACROSS) - 1, 4);
@@ -358,10 +396,6 @@ void anim_StationCharge_Charging(PatternAnimator& p10, double cycle = std::numer
   p10.draw_pattern_scrolling(p10.lightning, ROW_START, COL_START, delaystep, cycle);
 }
 
-void anim_StationInfiniteWait(PatternAnimator& p10, double cycle)
-{
-;
-}
 
 
 void runthreads()
@@ -460,7 +494,7 @@ void loop(void)
   {
     charge_started = false;
     charge_stopped = false;
-    // anim_StationCharge_Started();
+    // anim_StationCharge_Starting();
     anim_StationWaiting(p10, 1);
     // anim_StationError(p10, 1);
     // anim_StationCharge_Charging(p10, 1);
