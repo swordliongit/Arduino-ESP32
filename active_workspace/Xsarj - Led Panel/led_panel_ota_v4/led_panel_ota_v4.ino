@@ -235,29 +235,54 @@ void anim_StationWaiting(PatternAnimator& p10, double cycle = std::numeric_limit
 
 bool animFinished = false;
 
-void parallel_drawer_InsertSocket(PatternAnimator& p10, double cycle)
+void parallel_drawer_InsertSocket(PatternAnimator& p10, unsigned long duration, double cycle)
 {
     int ROW_START = 5;
-    int COL_START = 2;
+    int COL_START = 0;
 
-    p10.draw_pattern_static(p10.insert_socket, ROW_START, COL_START);
-    
+    unsigned long start = millis();
+    unsigned long end = 0;
+
+    while(end <= duration)
+    {
+      p10.draw_pattern_static(p10.insert_socket, ROW_START, COL_START);
+      end = millis() - start;
+    }
 }
 
-
-void anim_StationError(PatternAnimator& p10, double cycle = std::numeric_limits<double>::infinity())
+void parallel_drawer_BlinkExcmark(PatternAnimator& p10, unsigned long duration, double cycle)
 {
-  int ROW_START = 4;
-  int COL_START = 0;
-  int msdelay = 0;
-  int delaystep = 0;
+    int ROW_START = 4;
+    int COL_START = 51;
+
+    unsigned long start = millis();
+    unsigned long end = 0;
+
+    while(end <= duration)
+    {
+      p10.draw_pattern_static(p10.excmark_little, ROW_START, COL_START);
+      delay(500);
+      p10.delete_pattern_static(p10.excmark_little, ROW_START, COL_START);
+      delay(500);
+      end = millis() - start;
+    }
+}
+
+void anim_StationError(PatternAnimator& p10, unsigned long duration, double cycle = std::numeric_limits<double>::infinity())
+{
+
 
   // std::ref() must be used if we are passing a reference because thread arguments are moved/copied by value.
   // We can't copy a reference, we can copy the object that it refers to.
-  std::thread thread_InsertSocket(parallel_drawer_InsertSocket, std::ref(p10), cycle);
+
+
+  std::thread thread_InsertSocket(parallel_drawer_InsertSocket, std::ref(p10), duration, cycle);
+  std::thread thread_BlinkExcmark(parallel_drawer_BlinkExcmark, std::ref(p10), duration, cycle);
   // std::thread thread_Barrier(parallel_drawer_Barrier, std::ref(p10));
 
   thread_InsertSocket.join();
+  // thread_Border.join();
+  thread_BlinkExcmark.join();
   // thread_Barrier.join();
   // thread_BlinkExcmark.join();
 }
@@ -453,8 +478,8 @@ void loop(void)
   {
     charge_started = false;
     charge_stopped = false;
-    anim_InsertSocket(p10, 1);
-    anim_StationError(p10, 1);
+    anim_StationError(p10, 5000);
+    dmd.clearScreen(true);
   }
   else if (data_from_serial2 == "6")
   {
@@ -462,7 +487,7 @@ void loop(void)
     charge_stopped = false;
     // anim_StationCharge_Started();
     anim_StationWaiting(p10, 1);
-    // anim_StationError(p10, 1);
+    // anim_StationError(p10, 10);
     // anim_StationCharge_Charging(p10, 1);
   }
   else if (data_from_serial2 == "7")
